@@ -45,22 +45,11 @@ class SwaggerHttpServiceRoute(override val apiClasses: Set[Class[_]]) extends Sw
       }
     }
    */
-  val oauth2ForOpenIdConnectHack = new SecurityScheme()
-    .`type`(SecurityScheme.Type.OAUTH2)
-    .name("openId")
-    .flows(
-      new OAuthFlows().`implicit`(
-        new OAuthFlow()
-          .scopes(
-            new Scopes()
-              .addString("openid", "openid")
-              .addString("profile", "profile")
-          )
-          .authorizationUrl(oidc.getAuthorizationEndpointURI.toString)
-      )
-    )
-
-  override def securitySchemes: Map[String, SecurityScheme] = Map(SecurityScheme.Type.OAUTH2.toString -> oauth2ForOpenIdConnectHack)
+  val openIdConnectConfig = new SecurityScheme()
+  .`type`(SecurityScheme.Type.OPENIDCONNECT) //TODO get a normal OIDC configuration URL below
+  //.openIdConnectUrl(oidc.getAuthorizationEndpointURI.toString.replace("/auth", "/.well-known/openid-configuration"))
+  .openIdConnectUrl("http://localhost:5556/dex/.well-known/openid-configuration")
+  override def securitySchemes: Map[String, SecurityScheme] = Map(SecurityScheme.Type.OPENIDCONNECT.toString -> openIdConnectConfig)
 
   def route = get {
     routes ~
